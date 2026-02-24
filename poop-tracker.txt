@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q比 & 紅茶的便便紀錄</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fdfaf6; /* 乾淨的白色系背景 */
+    color: #5c4033; /* 溫暖的棕色字體 */
+    text-align: center;
+    padding: 20px;
+    margin: 0;
+  }
+  h1 {
+    color: #8b5a2b;
+    font-size: 24px;
+  }
+  .dog-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 30px 0;
+  }
+  .dog-btn {
+    background-color: #fff;
+    border: 3px solid #8b5a2b;
+    border-radius: 20px;
+    padding: 30px 20px;
+    width: 140px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #8b5a2b;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.1s, background-color 0.2s;
+    /* 讓手機點擊時不會有奇怪的藍色反白 */
+    -webkit-tap-highlight-color: transparent; 
+  }
+  .dog-btn:active {
+    transform: scale(0.95);
+    background-color: #f4e6d9;
+  }
+  .emoji {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 10px;
+  }
+  .log-section {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+  }
+  li {
+    padding: 12px 10px;
+    border-bottom: 1px dashed #ccc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  li:last-child {
+    border-bottom: none;
+  }
+  .dog-name {
+    font-weight: bold;
+    font-size: 18px;
+  }
+  .time-stamp {
+    color: #666;
+    font-size: 16px;
+  }
+  .clear-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #e07a5f;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+</style>
+</head>
+<body>
+
+  <h1>🐾 Q比 & 紅茶的便便紀錄表</h1>
+  <p>點擊專屬區域即可記錄當下時間！</p>
+
+  <div class="dog-container">
+    <button class="dog-btn" onclick="logPoop('Q比')">
+      <span class="emoji">🐶</span>Q比
+    </button>
+    <button class="dog-btn" onclick="logPoop('紅茶')">
+      <span class="emoji">🐶</span>紅茶
+    </button>
+  </div>
+
+  <div class="log-section">
+    <h2 style="font-size: 20px; margin-top: 0;">📅 歷史紀錄</h2>
+    <ul id="logList">
+      </ul>
+    <button class="clear-btn" onclick="clearLogs()">清除所有紀錄</button>
+  </div>
+
+  <script>
+    // 初始化時從瀏覽器的 localStorage 讀取紀錄
+    let poopLogs = JSON.parse(localStorage.getItem('poopLogs')) || [];
+
+    function renderLogs() {
+      const list = document.getElementById('logList');
+      list.innerHTML = '';
+      
+      if (poopLogs.length === 0) {
+        list.innerHTML = '<li style="color: #aaa; justify-content: center;">目前還沒有紀錄喔！</li>';
+        return;
+      }
+      
+      // 反轉陣列，讓最新的一筆紀錄顯示在最上面
+      const reversedLogs = [...poopLogs].reverse();
+      
+      reversedLogs.forEach(log => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="dog-name">${log.name}</span> <span class="time-stamp">${log.time}</span>`;
+        list.appendChild(li);
+      });
+    }
+
+    function logPoop(dogName) {
+      const now = new Date();
+      // 格式化時間：MM/DD HH:mm (例如：12/24 08:30)
+      const timeString = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+      
+      poopLogs.push({ name: dogName, time: timeString });
+      localStorage.setItem('poopLogs', JSON.stringify(poopLogs));
+      
+      renderLogs();
+    }
+
+    function clearLogs() {
+      if (confirm('確定要清除所有的便便紀錄嗎？')) {
+        poopLogs = [];
+        localStorage.removeItem('poopLogs');
+        renderLogs();
+      }
+    }
+
+    // 網頁一載入時先顯示現有紀錄
+    renderLogs();
+  </script>
+</body>
+</html>
